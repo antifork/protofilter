@@ -1,0 +1,50 @@
+.: PROTOFILTER :.
+
+OVERVIEW
+--------
+
+ Protofilter is a linux kernel 2.2.x family patch. It adds the feature of noisy 
+packet filtering to ppp.  This interuptor allow the correct operation of the ppp 
+idle option. This is important when you need ppp-on-demand.
+
+  By adding the feature of filtering (active filters  are currently implemented 
+under netBSD)  you  can easily specify a list of protocol the ppp will ignore
+when it computes the idle time. 
+
+  Some  isp' sends broadcast igmp (protocol =2), others sends proto-103 (carrier 
+control packages); the  effect is that your  ppp isn't able to  close the connec-
+tion in the manner required, since it's not able to calculate the idle time in 
+the correct way.
+ 
+  You just need to sniff your ppp connection when there is no traffic, 
+to determine which packets you need to ignore like the way described below:
+
+example:
+# tcpdump -i ppp0
+10:33:56.438456 151.5.148.59 > 224.0.0.1: igmp query [tos 0xc0] [ttl 1]
+10:34:06.378454 151.5.148.59 > 224.0.0.13: ip-proto-103 10 [tos 0xc0] [ttl 1]
+10:34:36.548456 151.5.148.59 > 224.0.0.13: ip-proto-103 10 [tos 0xc0] [ttl 1]
+10:34:56.798451 151.5.148.59 > 224.0.0.1: igmp query [tos 0xc0] [ttl 1]
+10:35:06.858442 151.5.148.59 > 224.0.0.13: ip-proto-103 10 [tos 0xc0] [ttl 1]
+
+Now load the ppp module patched, specifying the protocol marked as 
+being ignored:
+
+modprobe ppp ignore_proto=2,103            
+
+note: 2=igmp protocol, see /etc/protocols
+
+
+INSTALL
+-------
+To install the patch, set your uid to root and type ./proto.sh install.
+If everything goes fine, change directory to /usr/src/linux and rebuild the modules.
+
+make modules
+make modules_install
+
+
+Sincirely,
+
+ Bonelli Nicola <bonelli@antifork.org>
+

@@ -1,0 +1,91 @@
+--- /usr/src/linux/drivers/net/ppp.orig.c	Sat Jan 27 16:08:03 2001
++++ /usr/src/linux/drivers/net/ppp.c	Sat Jan 27 16:08:44 2001
+@@ -136,8 +136,32 @@
+  * Parameters which may be changed via insmod.
+  */
+ 
++
+ static int  flag_time = OPTIMIZE_FLAG_TIME;
++
++/*
++$Id$
++*/
++
++/* FIXME: idle protofilter. Bonelli Nicola <bonelli@antifork.org>
++*/
++
++#ifndef MAX_PROTO_IDLE_IGNORE
++#define MAX_PROTO_IDLE_IGNORE   128
++#endif
++
++static int  ignore_proto [MAX_PROTO_IDLE_IGNORE] = { 0 };
++static int  ignore_proto_buffer[32];
++
+ MODULE_PARM(flag_time, "i");
++MODULE_PARM(ignore_proto, "1-" __MODULE_STRING(MAX_PROTO_IDLE_IGNORE) "i");
++
++#define SET_PROTO_BIT(buff,i)   buff[i / 8] |= (0x01 << (i % 8)) 
++#define CHECK_PROTO_BIT(buff,i) buff[i / 8] &  (0x01 << (i % 8))
++
++/* EOC 
++*/
++
+ 
+ #define CHECK_PPP_MAGIC(ppp)	do { \
+ 	if (ppp->magic != PPP_MAGIC) { \
+@@ -280,6 +304,7 @@
+ {
+ 	static struct tty_ldisc	ppp_ldisc;
+ 	int    status;
++        int    i;
+ 
+ 	printk(KERN_INFO
+ 	       "PPP: version %s (demand dialling)"
+@@ -290,6 +315,23 @@
+ 	       "TCP compression code copyright 1989 Regents of the "
+ 	       "University of California\n");
+ #endif
++   
++        /* FIXME: first, we load the 256 bits register in order to focus 
++                  protocols to be filtered.
++                  <bonelli@antifork.org> 
++         */ 
++       
++                printk(KERN_DEBUG
++                       "PPP idle protofilter <bonelli@antifork.org>\n");
++	
++        for (i=0; i< MAX_PROTO_IDLE_IGNORE && ignore_proto[i]; i++)	
++		{
++		SET_PROTO_BIT(ignore_proto_buffer, 0xff & ignore_proto[i]);
++		printk(KERN_DEBUG 
++                       "PPP idle proto: %d, filtered\n",
++                       ignore_proto[i]);
++		}
++
+ 
+ 	/*
+ 	 * Register the tty discipline
+@@ -2252,7 +2294,22 @@
+ 	skb->protocol = htons(proto);
+ 	skb_pull(skb, PPP_HDRLEN);	/* pull off ppp header */
+ 	skb->mac.raw   = skb->data;
+-	ppp->last_recv = jiffies;
++
++        /* FIXME: 
++                 Since the active-filter is not implemented in linux
++                 environment, we have to perform a first filtering here,
++                 in order to block noisy packets such as igmp query [tos 0xc0] 
++                 or ip-proto-103 that some isp use to send.
++
++                 Otherwise the idle option in combination with ppp-on-demand 
++                 won't work properly. 
++
++                 (int)skb->data[9]= protocol field.
++         */
++
++        if  ( !CHECK_PROTO_BIT(ignore_proto_buffer, (int)skb->data[9]) )        
++		ppp->last_recv = jiffies;
++
+ 	netif_rx (skb);
+ 	return 1;
+ }
