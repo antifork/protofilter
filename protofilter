@@ -11,7 +11,7 @@
 +$Id$
 +*/
 +
-+/* FIXME: Jiffies protofilter. Bonelli Nicola <bonelli@antifork.org>
++/* FIXME: protofilter. Bonelli Nicola <bonelli@antifork.org>
 +*/
 +
 +#ifndef MAX_PROTO_IGNORED
@@ -51,10 +51,10 @@
  #endif
 -
 +   
-+        /* FIXME:  Jiffies proto-filter. 
++        /* FIXME:  proto-filter. 
 +         */ 
 +         printk(KERN_INFO
-+                "PPP: Jiffies proto-filter 0.21 <bonelli@antifork.org>\n");
++                "PPP: proto-filter 0.21 <bonelli@antifork.org>\n");
 +
 +        for (i=0; i< MAX_PROTO_IGNORED && proto_in[i]; i++)	
 +	{
