@@ -3,9 +3,10 @@
 OVERVIEW
 --------
 
- Protofilter is a linux kernel 2.2.x family patch. It adds the feature of noisy 
-packet filtering to ppp. This interuptor allows the correct operation of the ppp
-idle option. This is important when you need ppp-on-demand.
+ Protofilter is a linux kernel 2.2.x family patch. It adds the feature of 
+packet filtering, concerning the idle option goal. This feature allows the 
+correct operation of the ppp idle option; it is important when you need 
+ppp-on-demand.
 
   By adding the feature of filtering (active filters  are currently implemented 
 under netBSD)  you  can easily specify a list of protocol the ppp will ignore
@@ -17,7 +18,7 @@ tion in the manner required, since it's not able to calculate the idle time in
 the correct way.
  
   You just need to sniff your ppp connection when there is no traffic, 
-to determine which packets you need to ignore like the way described below:
+to determine which packets you need to ignore like.
 
 example:
 # tcpdump -i ppp0
@@ -30,7 +31,7 @@ example:
 Now load the ppp module patched, specifying the protocol marked as 
 being ignored:
 
-modprobe ppp ignore_proto=2,103            
+modprobe ppp proto_in=2,103            
 
 note: 2=igmp protocol, see /etc/protocols
 

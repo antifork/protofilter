@@ -1,1 +1,1 @@
-/sbin/modprobe ppp ignore_proto=2,103
+/sbin/modprobe ppp proto_in=2,103 proto_out=1
