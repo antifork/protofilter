@@ -4,15 +4,15 @@ OVERVIEW
 --------
 
  Protofilter is a linux kernel 2.2.x family patch. It adds the feature of noisy 
-packet filtering to ppp.  This interuptor allow the correct operation of the ppp 
+packet filtering to ppp. This interuptor allows the correct operation of the ppp
 idle option. This is important when you need ppp-on-demand.
 
   By adding the feature of filtering (active filters  are currently implemented 
 under netBSD)  you  can easily specify a list of protocol the ppp will ignore
 when it computes the idle time. 
 
-  Some  isp' sends broadcast igmp (protocol =2), others sends proto-103 (carrier 
-control packages); the  effect is that your  ppp isn't able to  close the connec-
+  Some isp' sends broadcast igmp (protocol =2), others sends proto-103 (carrier
+control packages); the effect is that your  ppp isn't able to  close the connec-
 tion in the manner required, since it's not able to calculate the idle time in 
 the correct way.
  
@@ -38,7 +38,8 @@ note: 2=igmp protocol, see /etc/protocols
 INSTALL
 -------
 To install the patch, set your uid to root and type ./proto.sh install.
-If everything goes fine, change directory to /usr/src/linux and rebuild the modules.
+If everything goes fine, change directory to /usr/src/linux and rebuild the 
+modules.
 
 make modules
 make modules_install

@@ -47,7 +47,7 @@
  #endif
 +   
 +        /* FIXME: first, we load the 256 bits register in order to focus 
-+                  protocols to be filtered.
++                  protocols to filter.
 +                  <bonelli@antifork.org> 
 +         */ 
 +       
